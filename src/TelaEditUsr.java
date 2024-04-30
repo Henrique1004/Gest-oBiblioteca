@@ -87,7 +87,7 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         }
         else if(UsuarioBaseDeDados.editUsuario(usuario.getId(), nome.getText(), cargo.getText(), senha.getText())){
             JOptionPane.showMessageDialog(null, "Usuário editado com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
-            List<Usuario> update = UsuarioBaseDeDados.getUsuarios(nome.getText());
+            List<Usuario> update = UsuarioBaseDeDados.getUsuarios(TelaMenuUsr.campoPesq.getText());
             TelaMenuUsr.loadUsers(update);
         }
     }

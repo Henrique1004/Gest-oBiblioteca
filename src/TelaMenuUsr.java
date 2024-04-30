@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TelaMenuUsr extends JFrame implements ActionListener{
     private JPanel topPanel;
-    private JTextField campoPesq;
+    public static JTextField campoPesq;
     private JButton botPesq;
     private static DefaultTableModel tableModel;
     private JTable table;

@@ -1,14 +1,14 @@
 public class Livro {
-    private String titulo, autor, categoria, isbn, id;
-    private int qtde, qtdeDiasEmp;
+    private String titulo, autor, categoria, isbn;
+    private int id, qtde, qtdeDiasEmp;
     private boolean disponivel;
 
-    public Livro(String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, boolean disponivel){
+    public Livro(int id, String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, boolean disponivel){
         this.titulo = titulo;
         this.autor = autor;
         this.categoria = categoria;
         this.isbn = isbn;
-        this.id = criaId();
+        this.id = id;
         this.qtde = qtde;
         this.qtdeDiasEmp = qtdeDiasEmp;
         this.disponivel = disponivel;
@@ -33,7 +33,7 @@ public class Livro {
         return this.isbn;
     }
 
-     String getId() {
+     int getId() {
         return this.id;
     }
 

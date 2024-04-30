@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,8 +7,10 @@ import java.util.List;
 
 public class TelaMenuLivro extends JFrame implements ActionListener{
     private JPanel topPanel;
-    private JTextField campoPesq;
+    public static JTextField campoPesq;
     private JButton botPesq;
+    private static DefaultTableModel tableModel;
+    private JTable table;
     private JScrollPane resultadoPesq;
     private JPanel painelBot;
     private JButton botAdLivro;
@@ -33,12 +36,9 @@ public class TelaMenuLivro extends JFrame implements ActionListener{
         topPanel.add(botPesq);
         this.add(topPanel, BorderLayout.NORTH);
 
-        resultadoPesq = new JScrollPane();
-        resultadoPesq.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        resultadoPesq.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        resultadoPesq.setOpaque(true);
-        resultadoPesq.setBackground(Color.WHITE);
-        //resultadoPesq.add
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Título", "Autor", "Categoria", "ISBN", "Qtde", "Qtde de dias de empréstimo", "Disponibilidade"}, 0);
+        table = new JTable(tableModel);
+        resultadoPesq = new JScrollPane(table);
         this.add(resultadoPesq, BorderLayout.CENTER);
 
         painelBot = new JPanel();
@@ -72,58 +72,48 @@ public class TelaMenuLivro extends JFrame implements ActionListener{
         setLocationRelativeTo(null);
         setVisible(true);
     }
-//    void tornaFuncIndisp(Usuario UsrLogado){
+    public static void loadBooks(List<Livro> livros) {
+        tableModel.setRowCount(0);
+        for (Livro livro : livros) {
+            tableModel.addRow(new Object[]{livro.getId(), livro.getTitulo(), livro.getAutor(), livro.getCategoria(), livro.getIsbn(), livro.getQtde(), livro.getQtdeDiasEmp(), livro.getDisponivel()});
+        }
+    }
+//    void tornaFuncIndisp(Livro UsrLogado){
 //
 //    }
-    @Override
+@Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals("pesquisar")){
-            String busca = campoPesq.getText();
-            List<JPanel> resultadosDaBusca = Main.livroBaseDeDados.peLivroPanel(busca);
-            if(resultadosDaBusca.isEmpty()){
-                JPanel resultados = new JPanel(new GridLayout(0, 1));
-                resultados.setBackground(Color.WHITE);
-                resultados.setOpaque(true);
-                resultadoPesq.setViewportView(resultados);
-                resultadoPesq.revalidate();
-                resultadoPesq.repaint();
-
+        if (e.getActionCommand().equals("pesquisar")) {
+            String chave = campoPesq.getText();
+            List<Livro> resultadosDaBusca = LivroBaseDeDados.getLivros(chave);
+            if (resultadosDaBusca.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Livro não encontrado", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-
+                loadBooks(resultadosDaBusca);
+            } else {
+                loadBooks(resultadosDaBusca);
             }
-            else{
-                JPanel resultados = new JPanel(new GridLayout(0, 1));
-                resultados.setBackground(Color.WHITE);
-                resultados.setOpaque(true);
-
-                for (JPanel panel : resultadosDaBusca) {
-                    panel.setBackground(Color.WHITE);
-                    resultados.add(panel);
-                }
-                resultadoPesq.setViewportView(resultados);
-                resultadoPesq.revalidate();
-                resultadoPesq.repaint();
-            }
-        }
-        else if(e.getActionCommand().equals("adicionar")){
+        } else if (e.getActionCommand().equals("adicionar")) {
             TelaCadastroLivro telaCadastroLivro = new TelaCadastroLivro();
-        }
-        else if (e.getActionCommand().equals("editar")) {
-            String editString = JOptionPane.showInputDialog("Isbn do livro a ser editado: ");
-            if(Main.livroBaseDeDados.existeLivro(editString)){
-                TelaEditLivro telaEditLivro = new TelaEditLivro(Main.livroBaseDeDados.peLivro(editString));
+        } else if (e.getActionCommand().equals("editar")) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                int id = (int) tableModel.getValueAt(selectedRow, 0);
+                List<Livro> umLivro = LivroBaseDeDados.getLivros(String.valueOf(id));
+                Livro livro = umLivro.getFirst();
+                TelaEditLivro telaEditLivro = new TelaEditLivro(livro);
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecione um livro para editar.", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null, "Livro não encontrado", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-        else if(e.getActionCommand().equals("excluir")){
-            String excString = JOptionPane.showInputDialog("Isbn do livro a ser excluído: ");
-            if(Main.livroBaseDeDados.excLivro(excString)){
-                JOptionPane.showMessageDialog(null, "Livro excluído com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Livro não encontrado!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        } else if (e.getActionCommand().equals("excluir")) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                int id = (int) tableModel.getValueAt(selectedRow, 0);
+                LivroBaseDeDados.excLivro(id);
+                JOptionPane.showMessageDialog(null, "Livro excluído com sucesso!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                List<Livro> update = LivroBaseDeDados.getLivros(campoPesq.getText());
+                loadBooks(update);
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecione um livro para excluir.", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }

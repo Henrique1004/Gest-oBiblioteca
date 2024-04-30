@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class TelaEditLivro extends JFrame implements ActionListener {
     private Livro livro;
@@ -117,16 +118,10 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         else if(isNull(titulo.getText(), autor.getText(), categoria.getText(), isbn.getText())){
             JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         }
-        else {
-            livro.setTitulo(titulo.getText());
-            livro.setAutor(autor.getText());
-            livro.setCategoria(categoria.getText());
-            livro.setIsbn(isbn.getText());
-            livro.setQtde(Integer.parseInt(qtde.getText()));
-            livro.setQtdeDiasEmp(Integer.parseInt(qtdeDiasEmp.getText()));
-            livro.setDisponivel(disponivel.isSelected());
+        else if(LivroBaseDeDados.editLivro(livro.getId(), titulo.getText(), autor.getText(), categoria.getText(), isbn.getText(), Integer.parseInt(qtde.getText()), Integer.parseInt(qtdeDiasEmp.getText()), disponivel.isSelected())){
             JOptionPane.showMessageDialog(null, "Livro editado com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
+            List<Livro> update = LivroBaseDeDados.getLivros(TelaMenuLivro.campoPesq.getText());
+            TelaMenuLivro.loadBooks(update);
         }
-
     }
 }

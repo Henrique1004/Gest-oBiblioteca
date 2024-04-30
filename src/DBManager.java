@@ -29,8 +29,8 @@ public class DBManager {
                     + "categoria TEXT NOT NULL,"
                     + "isbn TEXT NOT NULL,"
                     + "qtde INTEGER NOT NULL,"
-                    + "qtdeDiasEmp int NOT NULL,"
-                    + "disponivel INT NOT NULL"
+                    + "qtdeDiasEmp INTEGER NOT NULL,"
+                    + "disponivel TEXT NOT NULL"
                     + ");";
             statement.execute(sql2);
 
