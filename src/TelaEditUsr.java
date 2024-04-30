@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TelaEditUsr extends JFrame implements ActionListener {
     private Usuario usuario;
@@ -85,7 +87,8 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         }
         else if(UsuarioBaseDeDados.editUsuario(usuario.getId(), nome.getText(), cargo.getText(), senha.getText())){
             JOptionPane.showMessageDialog(null, "Usuário editado com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
+            List<Usuario> update = UsuarioBaseDeDados.getUsuarios(nome.getText());
+            TelaMenuUsr.loadUsers(update);
         }
     }
 }
-

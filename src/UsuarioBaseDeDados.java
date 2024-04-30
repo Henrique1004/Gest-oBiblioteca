@@ -64,53 +64,15 @@ public class UsuarioBaseDeDados {
         return false;
     }
 
-//    boolean excUsuario(String chave) {
-//        for (Usuario usuario : usuarios) {
-//            if (usuario.getId().equals(chave)){
-//                usuarios.remove(usuario);
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    Usuario peUsuario(String chave) {
-//        for (Usuario usuario : usuarios) {
-//            if ((usuario.getNome().equalsIgnoreCase(chave)) || (usuario.getCargo().equalsIgnoreCase(chave)) || (usuario.getId().equals(chave)))
-//                return usuario;
-//        }
-//        return null;
-//    }
-//    /*No método abaixo leva-se em consideração que pode haver mais de um usuario com o mesmo nome ou cargo*/
-//     List<Usuario> peUsr(String chave) {
-//        List<Usuario> usuariosPe = new ArrayList<>();
-//        for(Usuario usuario : usuarios){
-//            if((usuario.getNome()).equals(chave)||(usuario.getCargo()).equals(chave))
-//                usuariosPe.add(usuario);
-//        }
-//        return null;
-//    }
-//    List<JPanel> peUsuarioPanel(String chave) {
-//        List<JPanel> usuariosPe = new ArrayList<>();
-//        for (Usuario usuario : usuarios) {
-//            if ((usuario.getId().equalsIgnoreCase(chave)) || (usuario.getNome().equalsIgnoreCase(chave)) || (usuario.getCargo().equalsIgnoreCase(chave))) {
-//                JTextArea textArea = new JTextArea("ID: " + usuario.getId() + " / Nome: " + usuario.getNome() + "  /  Cargo: " + usuario.getCargo());
-//                textArea.setOpaque(true);
-//                textArea.setFont(new Font("Comic Sans", Font.PLAIN, 16));
-//                textArea.setLineWrap(true);
-//                textArea.setWrapStyleWord(true);
-//                textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
-//                textArea.setBackground(Color.WHITE);
-//                textArea.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-//                textArea.setEditable(false);
-//                JPanel painelTextArea = new JPanel();
-//                painelTextArea.add(textArea);
-//                painelTextArea.setLayout(new BoxLayout(painelTextArea, BoxLayout.Y_AXIS));
-//                painelTextArea.setBackground(Color.WHITE);
-//                painelTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//                usuariosPe.add(painelTextArea);
-//            }
-//        }
-//        return usuariosPe;
-//    }
+    static boolean excUsuario(int id) {
+        try (Connection connection = DBManager.openDatabaseConnection();
+             Statement statement = connection.createStatement()) {
+            String sql = "DELETE FROM usuarios WHERE id = '" + id + "'";
+            statement.executeUpdate(sql);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

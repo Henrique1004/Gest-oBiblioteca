@@ -4,6 +4,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TelaMenuUsr extends JFrame implements ActionListener{
@@ -76,7 +77,7 @@ public class TelaMenuUsr extends JFrame implements ActionListener{
     //    void tornaFuncIndisp(Usuario UsrLogado){
 //
 //    }
-    private void loadUsers(List<Usuario> usuarios) {
+    public static void loadUsers(List<Usuario> usuarios) {
         tableModel.setRowCount(0);
         for (Usuario usuario : usuarios) {
             tableModel.addRow(new Object[]{usuario.getId(), usuario.getNome(), usuario.getCargo(), usuario.getSenha()});
@@ -85,40 +86,40 @@ public class TelaMenuUsr extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals("pesquisar")){
+        if (e.getActionCommand().equals("pesquisar")) {
             String chave = campoPesq.getText();
             List<Usuario> resultadosDaBusca = UsuarioBaseDeDados.getUsuarios(chave);
-            if(resultadosDaBusca.isEmpty()){
+            if (resultadosDaBusca.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Usuário não encontrado", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else{
+                loadUsers(resultadosDaBusca);
+            } else {
                 loadUsers(resultadosDaBusca);
             }
-        }
-        else if(e.getActionCommand().equals("adicionar")){
+        } else if (e.getActionCommand().equals("adicionar")) {
             TelaCadastroUsr telaCadastroUsuario = new TelaCadastroUsr();
-        }
-        else if (e.getActionCommand().equals("editar")) {
+        } else if (e.getActionCommand().equals("editar")) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
                 int id = (int) tableModel.getValueAt(selectedRow, 0);
                 List<Usuario> umUsuario = UsuarioBaseDeDados.getUsuarios(String.valueOf(id));
                 Usuario usuario = umUsuario.getFirst();
                 TelaEditUsr telaEditUsr = new TelaEditUsr(usuario);
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(null, "Selecione um usuário para editar.", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-        }
-        else if(e.getActionCommand().equals("excluir")){
-            String excString = JOptionPane.showInputDialog("ID do usuário a ser excluído: ");
-            //if(Main.usuarioBaseDeDados.excUsuario(excString)){
-                JOptionPane.showMessageDialog(null, "Usuário excluído com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
+        } else if (e.getActionCommand().equals("excluir")) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                int id = (int) tableModel.getValueAt(selectedRow, 0);
+                UsuarioBaseDeDados.excUsuario(id);
+                JOptionPane.showMessageDialog(null, "Usuário excluído com sucesso!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                List<Usuario> update = UsuarioBaseDeDados.getUsuarios(campoPesq.getText());
+                loadUsers(update);
+            } else {
+                JOptionPane.showMessageDialog(null, "Selecione um usuário para excluir.", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null, "Usuário não encontrado!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            }
         }
+    }
 }
 
 
