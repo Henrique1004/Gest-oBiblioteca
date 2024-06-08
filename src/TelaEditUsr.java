@@ -2,10 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class TelaEditUsr extends JFrame implements ActionListener {
+public class TelaEditUsr extends JFrame implements UsrListener, ActionListener {
+    private final TelaEditUsrController telaEditUsrController;
+    private final UsuarioDAO usuarioDAO;
+    private TelaMenuUsr telaMenuUsr;
+    private String chave;
     private Usuario usuario;
     private JPanel campos;
     private JTextField nome;
@@ -14,7 +18,11 @@ public class TelaEditUsr extends JFrame implements ActionListener {
     private JPanel painelBot;
     private JButton botEdit;
 
-    public TelaEditUsr(Usuario usuario){
+    public TelaEditUsr(TelaMenuUsr telaMenuUsr, String chave, Usuario usuario, UsuarioDAO usuarioDAO){
+        this.telaMenuUsr = telaMenuUsr;
+        this.chave = chave;
+        this.usuarioDAO = usuarioDAO;
+        this.telaEditUsrController = new TelaEditUsrController(this, usuarioDAO);
         this.usuario = usuario;
         setLayout(new BorderLayout());
 
@@ -32,6 +40,12 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         nome.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         nome.setBorder(null);
         nome.setPreferredSize(new Dimension(400, 60));
+        nome.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            nome.setText("");
+            }
+        });
         gbl.setConstraints(nome, gbc);
         campos.add(nome);
         gbc.gridy++;
@@ -39,6 +53,12 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         cargo.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         cargo.setBorder(null);
         cargo.setPreferredSize(new Dimension(400, 60));
+        cargo.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cargo.setText("");
+            }
+        });
         gbl.setConstraints(cargo, gbc);
         campos.add(cargo);
         gbc.gridy++;
@@ -46,6 +66,12 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         senha.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         senha.setBorder(null);
         senha.setPreferredSize(new Dimension(400, 60));
+        senha.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                senha.setText("");
+            }
+        });
         gbl.setConstraints(senha, gbc);
         campos.add(senha);
         this.add(campos, BorderLayout.CENTER);
@@ -67,28 +93,21 @@ public class TelaEditUsr extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    private boolean isNumeric(String str) {
-        return (str != null && str.matches("\\d+"));
+    public void showErrorMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    private boolean isNull(String campo1, String campo2, String campo3){
-        if((campo1 == null) || (campo2 == null) || (campo3 == null)){
-            return true;
-        }
-        return false;
+
+    public void showSuccesMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void actionPerformed(ActionEvent e){
-        if(isNull(nome.getText(), cargo.getText(), senha.getText())){
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if (!(cargo.getText().equals("adm") || cargo.getText().equals("usr"))){
-            JOptionPane.showMessageDialog(null, "Preencha com 'adm' para administrador ou 'usr' para usuário", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if(UsuarioBaseDeDados.editUsuario(usuario.getId(), nome.getText(), cargo.getText(), senha.getText())){
-            JOptionPane.showMessageDialog(null, "Usuário editado com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
-            List<Usuario> update = UsuarioBaseDeDados.getUsuarios(TelaMenuUsr.campoPesq.getText());
-            TelaMenuUsr.loadUsers(update);
-        }
+        telaEditUsrController.editUsuario(usuario.getId(), nome.getText(), senha.getText(), cargo.getText());
+    }
+
+    @Override
+    public void updateData() {
+        telaMenuUsr.loadUsers(chave);
     }
 }

@@ -2,8 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class TelaCadastroUsr extends JFrame implements ActionListener {
+public class TelaCadastroUsr extends JFrame implements ActionListener{
+    private final TelaMenuUsr telaMenuUsr;
+    private String chave;
+    private final UsuarioDAO usuarioDAO;
+    private final TelaCadastroUsrController telaCadastroUsrController;
     private JPanel campos;
     private JTextField nome;
     private JTextField cargo;
@@ -11,7 +17,11 @@ public class TelaCadastroUsr extends JFrame implements ActionListener {
     private JPanel painelBot;
     private JButton botCad;
 
-    public TelaCadastroUsr(){
+    public TelaCadastroUsr(TelaMenuUsr telaMenuUsr, String chave, UsuarioDAO usuarioDAO){
+        this.telaMenuUsr = telaMenuUsr;
+        this.chave = chave;
+        this.usuarioDAO = new UsuarioDAO();
+        this.telaCadastroUsrController = new TelaCadastroUsrController(this, usuarioDAO);
         setLayout(new BorderLayout());
 
         campos = new JPanel();
@@ -28,6 +38,12 @@ public class TelaCadastroUsr extends JFrame implements ActionListener {
         nome.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         nome.setBorder(null);
         nome.setPreferredSize(new Dimension(400, 60));
+        nome.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                nome.setText("");
+            }
+        });
         gbl.setConstraints(nome, gbc);
         campos.add(nome);
         gbc.gridy++;
@@ -35,6 +51,12 @@ public class TelaCadastroUsr extends JFrame implements ActionListener {
         cargo.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         cargo.setBorder(null);
         cargo.setPreferredSize(new Dimension(400, 60));
+        cargo.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cargo.setText("");
+            }
+        });
         gbl.setConstraints(cargo, gbc);
         campos.add(cargo);
         gbc.gridy++;
@@ -42,6 +64,12 @@ public class TelaCadastroUsr extends JFrame implements ActionListener {
         senha.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         senha.setBorder(null);
         senha.setPreferredSize(new Dimension(400, 60));
+        senha.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                senha.setText("");
+            }
+        });
         gbl.setConstraints(senha, gbc);
         campos.add(senha);
         this.add(campos, BorderLayout.CENTER);
@@ -63,26 +91,17 @@ public class TelaCadastroUsr extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    private boolean isNull(String campo1, String campo2, String campo3){
-        if((campo1.isEmpty()) || (campo2.isEmpty()) || (campo3.isEmpty())){
-            return true;
-        }
-        return false;
+    public void showErrorMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showSuccesMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void actionPerformed(ActionEvent e){
-        if(isNull(nome.getText(), cargo.getText(), senha.getText())){
-            JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if (!(cargo.getText().equals("adm") || cargo.getText().equals("usr"))){
-            JOptionPane.showMessageDialog(null, "Preencha com 'adm' para administrador ou 'usr' para usuário", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if (UsuarioBaseDeDados.adUsuario(nome.getText(), cargo.getText(), senha.getText())){
-            JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso!", "Confirmação", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else {
-            JOptionPane.showMessageDialog(null, "Usuário já cadastrado!", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
+        telaCadastroUsrController.adUsuario(nome.getText(), senha.getText(), cargo.getText());
     }
+
 }
