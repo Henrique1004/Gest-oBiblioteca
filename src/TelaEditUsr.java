@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TelaEditUsr extends JFrame implements UsrListener, ActionListener {
+public class TelaEditUsr extends JFrame implements ActionListener {
     private final TelaEditUsrController telaEditUsrController;
     private final UsuarioDAO usuarioDAO;
     private TelaMenuUsr telaMenuUsr;
@@ -104,10 +104,5 @@ public class TelaEditUsr extends JFrame implements UsrListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e){
         telaEditUsrController.editUsuario(usuario.getId(), nome.getText(), senha.getText(), cargo.getText());
-    }
-
-    @Override
-    public void updateData() {
-        telaMenuUsr.loadUsers(chave);
     }
 }

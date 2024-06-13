@@ -1,13 +1,11 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
-public class TelaMenuUsr extends JFrame implements UsrListener, ActionListener{
+public class TelaMenuUsr extends JFrame implements GeneralListener, ActionListener{
     private final UsuarioDAO usuarioDAO;
     private final TelaMenuUsrController telaMenuUsrController;
     private JPanel topPanel;
@@ -45,7 +43,7 @@ public class TelaMenuUsr extends JFrame implements UsrListener, ActionListener{
 
         table = new DefaultTableModel(new Object[]{"ID", "Nome", "Cargo", "Senha"}, 0);
         //table.
-        usrTable= new JTable(table);
+        usrTable = new JTable(table);
         resultadoPesq = new JScrollPane(usrTable);
         this.add(resultadoPesq, BorderLayout.CENTER);
 

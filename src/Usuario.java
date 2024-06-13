@@ -29,9 +29,6 @@ public class Usuario {
         this.cargo = cargo;
     }
 
-    private String criaId(){
-        return null;
-    }
     int getId(){
         return this.id;
     }

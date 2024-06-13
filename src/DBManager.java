@@ -1,4 +1,3 @@
-import java.sql.SQLException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -19,6 +18,8 @@ public class DBManager {
         try {
             sessionFactory = new MetadataSources(registry)
                     .addAnnotatedClass(Usuario.class)
+                    .addAnnotatedClass(Livro.class)
+                    .addAnnotatedClass(Emprestimo.class)
                     .buildMetadata()
                     .buildSessionFactory();
 

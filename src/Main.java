@@ -5,8 +5,10 @@ public class Main {
         DBManager.createSessionFactory();
 
         SwingUtilities.invokeLater(() -> {
-            TelaMenuUsr telaMenuUsr = new TelaMenuUsr();
-            telaMenuUsr.setVisible(true);
+            TelaMenuLivro telaMenuLivro = new TelaMenuLivro();
+            telaMenuLivro.setVisible(true);
+            TelaMenuEmp telaMenuEmp = new TelaMenuEmp();
+            telaMenuEmp.setVisible(true);
         });
     }
 }

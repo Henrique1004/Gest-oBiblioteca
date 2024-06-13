@@ -1,22 +1,15 @@
-import jakarta.persistence.NoResultException;
-
-import javax.swing.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.ArrayList;
 
 public class UsuarioDAO {
-    private final List<UsrListener> listeners = new ArrayList<>();
+    private final List<GeneralListener> listeners = new ArrayList<>();
 
-    public void subscribe(UsrListener usrListener) {
-        listeners.add(usrListener);
+    public void subscribe(GeneralListener generalListener) {
+        listeners.add(generalListener);
     }
 
     private void notifyDataChanged() {
-        for (UsrListener listener : listeners) {
+        for (GeneralListener listener : listeners) {
             listener.updateData();
         }
     }

@@ -1,22 +1,41 @@
-public class Livro {
-    private String titulo, autor, categoria, isbn;
-    private int id, qtde, qtdeDiasEmp;
-    private boolean disponivel;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-    public Livro(int id, String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, boolean disponivel){
+@Entity
+@Table(name = "livros")
+public class Livro {
+
+    @Id
+    @GeneratedValue
+    private int id;
+    private String titulo, autor, categoria, isbn, disponivel;
+    private int qtde, qtdeDiasEmp;
+
+    public Livro() {}
+
+    public Livro(int id, String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel){
+        this.id = id;
         this.titulo = titulo;
         this.autor = autor;
         this.categoria = categoria;
         this.isbn = isbn;
-        this.id = id;
         this.qtde = qtde;
         this.qtdeDiasEmp = qtdeDiasEmp;
         this.disponivel = disponivel;
     }
-    int iteradorId = 0;
-    private String criaId(){
-        return String.valueOf(iteradorId += 1);
+
+    public Livro(String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel){
+        this.titulo = titulo;
+        this.autor = autor;
+        this.categoria = categoria;
+        this.isbn = isbn;
+        this.qtde = qtde;
+        this.qtdeDiasEmp = qtdeDiasEmp;
+        this.disponivel = disponivel;
     }
+
      String getTitulo() {
         return this.titulo;
     }
@@ -45,7 +64,7 @@ public class Livro {
         return this.qtdeDiasEmp;
     }
 
-     boolean getDisponivel() {
+     String getDisponivel() {
         return this.disponivel;
     }
 
@@ -72,7 +91,7 @@ public class Livro {
         this.qtdeDiasEmp = novaQtdeDiasEmp;
     }
 
-     void setDisponivel(boolean novoDisponivel) {
+     void setDisponivel(String novoDisponivel) {
         this.disponivel = novoDisponivel;
     }
 }
