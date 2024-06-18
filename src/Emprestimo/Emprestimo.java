@@ -1,3 +1,6 @@
+package Emprestimo;
+
+import Livro.Livro;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -65,7 +68,7 @@ public class Emprestimo {
     public String getEstadoDev(){
         return this.estadoDev;
     }
-    public void setEstadoDev(String novoEstadoDev){
+    void setEstadoDev(String novoEstadoDev){
         this.estadoDev = novoEstadoDev;
     }
 }

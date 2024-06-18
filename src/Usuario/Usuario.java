@@ -1,3 +1,5 @@
+package Usuario;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,16 +31,16 @@ public class Usuario {
         this.cargo = cargo;
     }
 
-    int getId(){
+    public int getId(){
         return this.id;
     }
-    String getNome(){
+    public String getNome(){
         return this.nome;
     }
-    String getSenha(){
+    public String getSenha(){
         return this.senha;
     }
-    String getCargo(){
+    public String getCargo(){
         return this.cargo;
     }
     void setNome(String novoNome){

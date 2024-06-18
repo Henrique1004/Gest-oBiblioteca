@@ -1,3 +1,5 @@
+package Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,23 +7,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TelaCadastroUsr extends JFrame implements ActionListener{
-    private final TelaMenuUsr telaMenuUsr;
-    private String chave;
+public class TelaEditUsr extends JFrame implements ActionListener {
+    private final TelaEditUsrController telaEditUsrController;
     private final UsuarioDAO usuarioDAO;
-    private final TelaCadastroUsrController telaCadastroUsrController;
+    private String chave;
+    private Usuario usuario;
     private JPanel campos;
     private JTextField nome;
     private JTextField cargo;
     private JTextField senha;
     private JPanel painelBot;
-    private JButton botCad;
+    private JButton botEdit;
 
-    public TelaCadastroUsr(TelaMenuUsr telaMenuUsr, String chave, UsuarioDAO usuarioDAO){
-        this.telaMenuUsr = telaMenuUsr;
+    public TelaEditUsr(TelaMenuUsr telaMenuUsr, String chave, Usuario usuario, UsuarioDAO usuarioDAO){
         this.chave = chave;
-        this.usuarioDAO = new UsuarioDAO();
-        this.telaCadastroUsrController = new TelaCadastroUsrController(this, usuarioDAO);
+        this.usuarioDAO = usuarioDAO;
+        this.telaEditUsrController = new TelaEditUsrController(this, usuarioDAO);
+        this.usuario = usuario;
         setLayout(new BorderLayout());
 
         campos = new JPanel();
@@ -34,20 +36,20 @@ public class TelaCadastroUsr extends JFrame implements ActionListener{
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
         gbc.insets = new Insets(5, 5, 5, 5);
-        nome = new JTextField("Nome");
+        nome = new JTextField(usuario.getNome());
         nome.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         nome.setBorder(null);
         nome.setPreferredSize(new Dimension(400, 60));
         nome.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                nome.setText("");
+            nome.setText("");
             }
         });
         gbl.setConstraints(nome, gbc);
         campos.add(nome);
         gbc.gridy++;
-        cargo = new JTextField("Cargo");
+        cargo = new JTextField(usuario.getCargo());
         cargo.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         cargo.setBorder(null);
         cargo.setPreferredSize(new Dimension(400, 60));
@@ -60,7 +62,7 @@ public class TelaCadastroUsr extends JFrame implements ActionListener{
         gbl.setConstraints(cargo, gbc);
         campos.add(cargo);
         gbc.gridy++;
-        senha = new JTextField("Senha");
+        senha = new JTextField(usuario.getSenha());
         senha.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         senha.setBorder(null);
         senha.setPreferredSize(new Dimension(400, 60));
@@ -76,32 +78,32 @@ public class TelaCadastroUsr extends JFrame implements ActionListener{
 
         painelBot = new JPanel();
         painelBot.setBackground(Color.decode("#adaba3"));
-        botCad = new JButton("Cadastrar usuário");
-        botCad.setMaximumSize(new Dimension(100,20));
-        botCad.setFont(new Font("Comic Sans", Font.PLAIN, 16));
-        botCad.setBackground(Color.decode("#8b8c90"));
-        botCad.setFocusable(false);
-        botCad.addActionListener(this);
-        painelBot.add(botCad);
+        botEdit = new JButton("Editar usuário");
+        botEdit.setMaximumSize(new Dimension(100,20));
+        botEdit.setFont(new Font("Comic Sans", Font.PLAIN, 16));
+        botEdit.setBackground(Color.decode("#8b8c90"));
+        botEdit.setFocusable(false);
+        botEdit.addActionListener(this);
+        painelBot.add(botEdit);
         this.add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void actionPerformed(ActionEvent e){
-        telaCadastroUsrController.adUsuario(nome.getText(), senha.getText(), cargo.getText());
+        telaEditUsrController.editUsuario(usuario.getId(), nome.getText(), senha.getText(), cargo.getText());
+        dispose();
     }
-
 }

@@ -1,8 +1,14 @@
+package Emprestimo;
+
+import Interfaces.GeneralListener;
+import TelasIniciaisMain.Main;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TelaMenuEmp extends JFrame implements GeneralListener, ActionListener {
@@ -42,7 +48,12 @@ public class TelaMenuEmp extends JFrame implements GeneralListener, ActionListen
         this.add(topPanel, BorderLayout.NORTH);
 
         table = new DefaultTableModel(new Object[]{"ID", "Livro", "Data do empréstimo", "Qtde de dias", "Devolução", "Mutuário",
-                "RA do mutuário", "Devolução"}, 0);
+                "RA do mutuário", "Devolução"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         empTable = new JTable(table);
         resultadoPesq = new JScrollPane(empTable);
         this.add(resultadoPesq, BorderLayout.CENTER);
@@ -74,32 +85,40 @@ public class TelaMenuEmp extends JFrame implements GeneralListener, ActionListen
         add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        tornaFuncIndisp();
         setVisible(true);
     }
 
-    public void loadEmp(String chave) {
+    void loadEmp(String chave) {
         table.setRowCount(0);
         List<Emprestimo> emprestimos;
         emprestimos = telaMenuEmpController.getEmp(chave);
         for (Emprestimo emprestimo : emprestimos) {
-            table.addRow(new Object[]{emprestimo.getId(), emprestimo.getLivro(), emprestimo.getDataEmp(), emprestimo.getQtdeDias(),
-                    emprestimo.getDataDev(), emprestimo.getNomePessoa(),
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String dataEmp = emprestimo.getDataEmp().format(formatter);
+            String dataDev = emprestimo.getDataDev().format(formatter);
+            table.addRow(new Object[]{emprestimo.getId(), emprestimo.getLivro().getTitulo(), dataEmp, emprestimo.getQtdeDias(),
+                    dataDev, emprestimo.getNomePessoa(),
                     emprestimo.getRaPessoa(), emprestimo.getEstadoDev()});
         }
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
-    //    void tornaFuncIndisp(Usuario UsrLogado){
-//
-//    }
+
+    void tornaFuncIndisp(){
+        if(Main.usrLogado.getCargo().equals("usr")){
+            botExcEmp.setEnabled(false);
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("pesquisar")) {

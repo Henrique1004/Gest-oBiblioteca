@@ -1,3 +1,7 @@
+package Usuario;
+
+import Interfaces.GeneralListener;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -41,8 +45,12 @@ public class TelaMenuUsr extends JFrame implements GeneralListener, ActionListen
         topPanel.add(botPesq);
         this.add(topPanel, BorderLayout.NORTH);
 
-        table = new DefaultTableModel(new Object[]{"ID", "Nome", "Cargo", "Senha"}, 0);
-        //table.
+        table = new DefaultTableModel(new Object[]{"ID", "Nome", "Cargo", "Senha"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         usrTable = new JTable(table);
         resultadoPesq = new JScrollPane(usrTable);
         this.add(resultadoPesq, BorderLayout.CENTER);
@@ -74,14 +82,12 @@ public class TelaMenuUsr extends JFrame implements GeneralListener, ActionListen
         add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
-    //    void tornaFuncIndisp(Usuario UsrLogado){
-//
-//    }
-    public void loadUsers(String chave) {
+
+    void loadUsers(String chave) {
         table.setRowCount(0);
         List<Usuario> usuarios;
         usuarios = telaMenuUsrController.getUsuarios(chave);
@@ -90,11 +96,11 @@ public class TelaMenuUsr extends JFrame implements GeneralListener, ActionListen
         }
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 

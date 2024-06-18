@@ -1,3 +1,8 @@
+package Emprestimo;
+
+import Livro.Livro;
+import Livro.LivroDAO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 public class TelaCadastroEmp extends JFrame implements ActionListener {
     private final EmprestimoDAO emprestimoDAO;
+    private final LivroDAO livroDAO;
     private final TelaCadastroEmpController telaCadastroEmpController;
     private Livro livro;
     private String estadoDevString;
@@ -26,7 +32,8 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
 
     public TelaCadastroEmp(EmprestimoDAO emprestimoDAO) {
         this.emprestimoDAO = new EmprestimoDAO();
-        this.telaCadastroEmpController = new TelaCadastroEmpController(this, emprestimoDAO);
+        this.livroDAO = new LivroDAO();
+        this.telaCadastroEmpController = new TelaCadastroEmpController(this, emprestimoDAO, livroDAO);
         setLayout(new BorderLayout());
 
         campos = new JPanel();
@@ -57,7 +64,7 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
         dataEmp.setBorder(null);
         dataEmp.setPreferredSize(new Dimension(400, 60));
         dataEmp.setOpaque(true);
-        dataEmp.setBackground(Color.white);
+        dataEmp.setBackground(Color.gray);
         gbl.setConstraints(dataEmp, gbc);
         campos.add(dataEmp);
         gbc.gridy++;
@@ -66,7 +73,7 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
         qtdeDias.setBorder(null);
         qtdeDias.setPreferredSize(new Dimension(400, 60));
         qtdeDias.setOpaque(true);
-        qtdeDias.setBackground(Color.white);
+        qtdeDias.setBackground(Color.gray);
         gbl.setConstraints(qtdeDias, gbc);
         campos.add(qtdeDias);
         gbc.gridy++;
@@ -75,7 +82,7 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
         dataDev.setBorder(null);
         dataDev.setPreferredSize(new Dimension(400, 60));
         dataDev.setOpaque(true);
-        dataDev.setBackground(Color.white);
+        dataDev.setBackground(Color.gray);
         gbl.setConstraints(dataDev, gbc);
         campos.add(dataDev);
         gbc.gridy++;
@@ -104,12 +111,6 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
         });
         gbl.setConstraints(raPessoa, gbc);
         campos.add(raPessoa);
-//        gbc.gridy++;
-//        estadoDev = new JCheckBox("Devolvido");
-//        estadoDev.setFont(new Font("Comic Sans", Font.PLAIN, 16));
-//        estadoDev.setBackground(Color.decode("#adaba3"));
-//        gbl.setConstraints(estadoDev, gbc);
-//        campos.add(estadoDev);
         this.add(campos, BorderLayout.CENTER);
 
         painelBot = new JPanel();
@@ -124,33 +125,38 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
         this.add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    LocalDate dataEmpC = null;
+    LocalDate dataDevC = null;
+    int qtdeDiasF = 0;
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dataEmpC = null;
-        LocalDate dataDevC = null;
-        int qtdeDiasF = 0;
         vezesPressionado += 1;
 
         if(vezesPressionado == 1){
-            livro = emprestimoDAO.getLivroByIsbnForEmp(isbnLivro.getText());
+            livro = livroDAO.getLivroByIsbnForEmp(isbnLivro.getText());
 
             if(livro == null){
-                showErrorMessage("Livro não encontrado!");
+                showErrorMessage("Livro.Livro não encontrado!");
             }
+            else if(livro.getQtde() == 0 || livro.getDisponivel().equals("Indisponível")){
+                showErrorMessage("Livro.Livro indisponível");
+            }
+
             qtdeDiasF = livro.getQtdeDiasEmp();
             qtdeDias.setText("QTDE de dias do empréstimo: " + qtdeDiasF);
             dataEmpC = LocalDate.now();
@@ -161,10 +167,12 @@ public class TelaCadastroEmp extends JFrame implements ActionListener {
             dataDev.setText("Data de devolução " + dataDevF);
 
             estadoDevString = "Não devolvido";
+            botCad.setText("Confirma");
         }
         else if(vezesPressionado == 2){
             telaCadastroEmpController.adEmp(livro, dataEmpC, qtdeDiasF, dataDevC,
                     nomePessoa.getText(), raPessoa.getText(), estadoDevString);
+            dispose();
         }
     }
 }

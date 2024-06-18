@@ -1,3 +1,5 @@
+package Livro;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -36,35 +38,35 @@ public class Livro {
         this.disponivel = disponivel;
     }
 
-     String getTitulo() {
+     public String getTitulo() {
         return this.titulo;
     }
 
-     String getAutor() {
+     public String getAutor() {
         return this.autor;
     }
 
-     String getCategoria() {
+     public String getCategoria() {
         return this.categoria;
     }
 
-     String getIsbn() {
+     public String getIsbn() {
         return this.isbn;
     }
 
-     int getId() {
+     public int getId() {
         return this.id;
     }
 
-     int getQtde() {
+     public int getQtde() {
         return this.qtde;
     }
 
-     int getQtdeDiasEmp() {
+     public int getQtdeDiasEmp() {
         return this.qtdeDiasEmp;
     }
 
-     String getDisponivel() {
+     public String getDisponivel() {
         return this.disponivel;
     }
 
@@ -83,7 +85,7 @@ public class Livro {
      void setIsbn(String novoIsbn) {
         this.isbn = novoIsbn;
     }
-     void setQtde(int novaQtde) {
+     public void setQtde(int novaQtde) {
         this.qtde = novaQtde;
     }
 

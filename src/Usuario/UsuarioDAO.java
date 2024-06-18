@@ -1,3 +1,8 @@
+package Usuario;
+
+import Data.DBManager;
+import Interfaces.GeneralListener;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -14,11 +19,11 @@ public class UsuarioDAO {
         }
     }
 
-    public List<Usuario> getUsuarios(String chave) {
+    List<Usuario> getUsuarios(String chave) {
         List<Usuario> usuarios = new ArrayList<>();
         try {
             usuarios = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
-                return session.createSelectionQuery("from Usuario where lower(nome) = lower(:chave) or cargo = lower(:chave)", Usuario.class)
+                return session.createSelectionQuery("from Usuario where lower(nome) = lower(:chave) or cargo = :chave", Usuario.class)
                         .setParameter("chave", chave)
                         .getResultList();
             });
@@ -28,7 +33,7 @@ public class UsuarioDAO {
         return usuarios;
     }
 
-    public Usuario getUsuarioById(int id) {
+    Usuario getUsuarioById(int id) {
         Usuario usuario = null;
         try {
             usuario = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
@@ -79,7 +84,7 @@ public class UsuarioDAO {
         List<Usuario> usuarios = new ArrayList<>();
         try {
             usuarios = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
-                return session.createSelectionQuery("from Usuario where nome = :nome and cargo =:cargo", Usuario.class)
+                return session.createSelectionQuery("from Usuario where lower(nome) = lower(:nome) and cargo =:cargo", Usuario.class)
                         .setParameter("nome", nome)
                         .setParameter("cargo", cargo)
                         .getResultList();
@@ -103,5 +108,20 @@ public class UsuarioDAO {
             System.out.println("Erro ao excluir usuário: " + e.getMessage());
         }
         return false;
+    }
+
+    public Usuario getUsuarioForLogin(String nome, String senha) {
+        Usuario usuario = null;
+        try {
+            usuario = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
+                return session.createSelectionQuery("from Usuario where lower(nome) = lower(:nome) and senha =:senha", Usuario.class)
+                        .setParameter("nome", nome)
+                        .setParameter("senha", senha)
+                        .getSingleResultOrNull();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usuario;
     }
 }

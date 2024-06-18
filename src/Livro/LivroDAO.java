@@ -1,3 +1,9 @@
+package Livro;
+
+
+import Interfaces.GeneralListener;
+import Data.DBManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +20,8 @@ public class LivroDAO {
             listener.updateData();
         }
     }
-//or isbn = :chave or qtde = cast(:chave as int) or qtdeDiasEmp = cast(:chave as int)
-    public List<Livro> getLivros(String chave){
+
+    List<Livro> getLivros(String chave){
         List<Livro> livros = new ArrayList<>();
         try{
             livros = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
@@ -32,7 +38,7 @@ public class LivroDAO {
         return livros;
     }
 
-    public Livro getLivroById(int id) {
+    Livro getLivroById(int id) {
         Livro livro = null;
         try {
             livro = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
@@ -46,7 +52,7 @@ public class LivroDAO {
         return livro;
     }
 
-    public boolean adLivro(String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel) {
+    boolean adLivro(String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel) {
         try {
             if(!existeLivro(isbn)) {
                 DBManager.getDatabaseSessionFactory().inTransaction(session -> {
@@ -62,7 +68,7 @@ public class LivroDAO {
         return false;
     }
 
-    public boolean editLivro(int id, String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel) {
+    boolean editLivro(int id, String titulo, String autor, String categoria, String isbn, int qtde, int qtdeDiasEmp, String disponivel) {
         try {
             DBManager.getDatabaseSessionFactory().inTransaction(session -> {
                 Livro livro = session.get(Livro.class, id);
@@ -83,7 +89,7 @@ public class LivroDAO {
         return false;
     }
 
-    static boolean existeLivro(String isbn){
+    boolean existeLivro(String isbn){
         List<Livro> livros = new ArrayList<>();
         try {
             livros = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
@@ -98,7 +104,7 @@ public class LivroDAO {
         return !livros.isEmpty();
     }
 
-    public boolean excLivro(int id) {
+    boolean excLivro(int id) {
         try {
             DBManager.getDatabaseSessionFactory().inTransaction(session -> {
                 Livro livro = session.get(Livro.class, id);
@@ -108,6 +114,67 @@ public class LivroDAO {
             return true;
         } catch (Exception e) {
             System.out.println("Erro ao excluir livro: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public Livro getLivroByIsbnForEmp(String isbn) {
+        Livro livro = null;
+        try {
+            livro = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
+                return session.createSelectionQuery("from Livro where isbn = :chave",Livro.class)
+                        .setParameter("chave", isbn)
+                        .getSingleResult();
+            });
+            int id = livro.getId();
+            setQtdeLivroEmp(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return livro;
+    }
+
+    public boolean setQtdeLivroEmp(int id){
+        Livro livroQuery = null;
+        try{
+            DBManager.getDatabaseSessionFactory().inTransaction(session -> {
+                Livro livro = session.get(Livro.class, id);
+                livro.setQtde(livro.getQtde()>0?livro.getQtde()-1:0);
+                session.persist(livro);
+            });
+            livroQuery = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
+                return session.createSelectionQuery("from Livro where id = :chave",Livro.class)
+                        .setParameter("chave", id)
+                        .getSingleResult();
+            });
+            if(livroQuery.getQtde()==0){
+                DBManager.getDatabaseSessionFactory().inTransaction(session -> {
+                    Livro livro = session.get(Livro.class, id);
+                    livro.setDisponivel("Indisponível");
+                    session.persist(livro);
+                });
+            }
+            notifyDataChanged();
+            return true;
+        }
+        catch(Exception e){
+            System.out.println("Erro ao diminuir qtde do livro: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean adLivroDevolvido(int id){
+        try{
+            DBManager.getDatabaseSessionFactory().inTransaction(session -> {
+                Livro livro = session.get(Livro.class, id);
+                livro.setQtde(livro.getQtde() + 1);
+                session.persist(livro);
+            });
+            notifyDataChanged();
+            return true;
+        }
+        catch(Exception e){
+            System.out.println("Erro ao adicionar o livro devolvido: " + e.getMessage());
         }
         return false;
     }

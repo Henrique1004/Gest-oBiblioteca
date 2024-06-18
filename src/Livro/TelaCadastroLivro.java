@@ -1,16 +1,15 @@
+package Livro;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
-public class TelaEditLivro extends JFrame implements ActionListener {
-    private final TelaEditLivroController telaEditLivroController;
+public class TelaCadastroLivro extends JFrame implements ActionListener {
     private final LivroDAO livroDAO;
-    private TelaMenuLivro telaMenuLivro;
-    private Livro livro;
+    private final TelaCadastroLivroController telaCadastroLivroController;
     private JPanel campos;
     private JTextField titulo;
     private JTextField autor;
@@ -20,13 +19,11 @@ public class TelaEditLivro extends JFrame implements ActionListener {
     private JTextField qtdeDiasEmp;
     private JCheckBox disponivel;
     private JPanel painelBot;
-    private JButton botEdit;
+    private JButton botCad;
 
-    public TelaEditLivro(TelaMenuLivro telaMenuLivro, Livro livro, LivroDAO livroDAO){
-        this.telaMenuLivro = telaMenuLivro;
-        this.livroDAO = livroDAO;
-        this.telaEditLivroController = new TelaEditLivroController(this, livroDAO);
-        this.livro = livro;
+    public TelaCadastroLivro(LivroDAO livroDAO) {
+        this.livroDAO = new LivroDAO();
+        this.telaCadastroLivroController = new TelaCadastroLivroController(this, livroDAO);
         setLayout(new BorderLayout());
 
         campos = new JPanel();
@@ -39,7 +36,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
         gbc.insets = new Insets(5, 5, 5, 5);
-        titulo = new JTextField(livro.getTitulo());
+        titulo = new JTextField("Título");
         titulo.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         titulo.setBorder(null);
         titulo.setPreferredSize(new Dimension(400, 60));
@@ -52,7 +49,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(titulo, gbc);
         campos.add(titulo);
         gbc.gridy++;
-        autor = new JTextField(livro.getAutor());
+        autor = new JTextField("Autor");
         autor.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         autor.setBorder(null);
         autor.setPreferredSize(new Dimension(400, 60));
@@ -65,7 +62,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(autor, gbc);
         campos.add(autor);
         gbc.gridy++;
-        categoria = new JTextField(livro.getCategoria());
+        categoria = new JTextField("Categoria");
         categoria.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         categoria.setBorder(null);
         categoria.setPreferredSize(new Dimension(400, 60));
@@ -78,7 +75,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(categoria, gbc);
         campos.add(categoria);
         gbc.gridy++;
-        isbn = new JTextField(livro.getIsbn());
+        isbn = new JTextField("Isbn");
         isbn.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         isbn.setBorder(null);
         isbn.setPreferredSize(new Dimension(400, 60));
@@ -91,7 +88,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(isbn, gbc);
         campos.add(isbn);
         gbc.gridy++;
-        qtde = new JTextField(String.valueOf(livro.getQtde()));
+        qtde = new JTextField("Qtde");
         qtde.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         qtde.setBorder(null);
         qtde.setPreferredSize(new Dimension(400, 60));
@@ -104,7 +101,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(qtde, gbc);
         campos.add(qtde);
         gbc.gridy++;
-        qtdeDiasEmp = new JTextField(String.valueOf(livro.getQtdeDiasEmp()));
+        qtdeDiasEmp = new JTextField("Qtde de dias do empréstimo");
         qtdeDiasEmp.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         qtdeDiasEmp.setBorder(null);
         qtdeDiasEmp.setPreferredSize(new Dimension(400, 60));
@@ -117,9 +114,7 @@ public class TelaEditLivro extends JFrame implements ActionListener {
         gbl.setConstraints(qtdeDiasEmp, gbc);
         campos.add(qtdeDiasEmp);
         gbc.gridy++;
-        boolean disponivelBool = livro.getDisponivel().equals("Disponível")?true:false;
         disponivel = new JCheckBox("Disponível");
-        disponivel.setSelected(disponivelBool);
         disponivel.setFont(new Font("Comic Sans", Font.PLAIN, 16));
         disponivel.setBackground(Color.decode("#adaba3"));
         gbl.setConstraints(disponivel, gbc);
@@ -128,33 +123,34 @@ public class TelaEditLivro extends JFrame implements ActionListener {
 
         painelBot = new JPanel();
         painelBot.setBackground(Color.decode("#adaba3"));
-        botEdit = new JButton("Editar livro");
-        botEdit.setMaximumSize(new Dimension(100,20));
-        botEdit.setFont(new Font("Comic Sans", Font.PLAIN, 16));
-        botEdit.setBackground(Color.decode("#8b8c90"));
-        botEdit.setFocusable(false);
-        botEdit.addActionListener(this);
-        painelBot.add(botEdit);
+        botCad = new JButton("Cadastrar livro");
+        botCad.setMaximumSize(new Dimension(100, 20));
+        botCad.setFont(new Font("Comic Sans", Font.PLAIN, 16));
+        botCad.setBackground(Color.decode("#8b8c90"));
+        botCad.setFocusable(false);
+        botCad.addActionListener(this);
+        painelBot.add(botCad);
         this.add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         String disponivelString = disponivel.isSelected()?"Disponível":"Indisponível";
-        telaEditLivroController.editLivro(livro.getId(), titulo.getText(), autor.getText(), categoria.getText(), isbn.getText(),
+        telaCadastroLivroController.adLivro(titulo.getText(), autor.getText(), categoria.getText(), isbn.getText(),
                 qtde.getText(), qtdeDiasEmp.getText(), disponivelString);
+        dispose();
     }
 }

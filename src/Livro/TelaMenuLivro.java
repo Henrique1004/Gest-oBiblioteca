@@ -1,3 +1,8 @@
+package Livro;
+
+import Interfaces.GeneralListener;
+import TelasIniciaisMain.Main;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -41,8 +46,12 @@ public class TelaMenuLivro extends JFrame implements GeneralListener, ActionList
         topPanel.add(botPesq);
         this.add(topPanel, BorderLayout.NORTH);
 
-        table = new DefaultTableModel(new Object[]{"ID", "Título", "Autor", "Categoria", "ISBN", "Qtde", "Qtde de dias de empréstimo", "Disponibilidade"}, 0);
-        //table.
+        table = new DefaultTableModel(new Object[]{"ID", "Título", "Autor", "Categoria", "ISBN", "Qtde disponível", "Qtde de dias de empréstimo", "Disponibilidade"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         livroTable = new JTable(table);
         resultadoPesq = new JScrollPane(livroTable);
         this.add(resultadoPesq, BorderLayout.CENTER);
@@ -74,11 +83,12 @@ public class TelaMenuLivro extends JFrame implements GeneralListener, ActionList
         add(painelBot, BorderLayout.SOUTH);
 
         pack();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        tornaFuncIndisp();
         setVisible(true);
     }
-    public void loadLivros(String chave) {
+    void loadLivros(String chave) {
         table.setRowCount(0);
         List<Livro> livros;
         livros = telaMenuLivroController.getLivros(chave);
@@ -88,16 +98,22 @@ public class TelaMenuLivro extends JFrame implements GeneralListener, ActionList
         }
     }
 
-    public void showErrorMessage(String msg) {
+    void showErrorMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showSuccesMessage(String msg) {
+    void showSuccesMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }
-//    void tornaFuncIndisp(Livro UsrLogado){
-//
-//    }
+
+    void tornaFuncIndisp(){
+        if(Main.usrLogado.getCargo().equals("usr")){
+            botAdLivro.setEnabled(false);
+            botEditLivro.setEnabled(false);
+            botExcLivro.setEnabled(false);
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("pesquisar")) {

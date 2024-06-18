@@ -1,3 +1,8 @@
+package Data;
+
+import Livro.Livro;
+import Usuario.Usuario;
+import Emprestimo.Emprestimo;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;

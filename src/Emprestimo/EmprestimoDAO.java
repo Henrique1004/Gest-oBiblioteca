@@ -1,3 +1,9 @@
+package Emprestimo;
+
+import Data.DBManager;
+import Interfaces.GeneralListener;
+import Livro.Livro;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +21,14 @@ public class EmprestimoDAO {
         }
     }
 
-    public List<Emprestimo> getEmp(String chave) {
+    List<Emprestimo> getEmp(String chave) {
         List<Emprestimo> emprestimos = new ArrayList<>();
         try {
             emprestimos = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
-                return session.createSelectionQuery("from Emprestimo where lower(livro) = lower(:chave) or lower(nomePessoa) = lower(:chave)" +
-                                "or raPessoa = :chave", Emprestimo.class)
+                return session.createQuery(
+                        "select emprestimo from Emprestimo emprestimo " +
+                                "where (lower(emprestimo.nomePessoa) = lower(:chave) or emprestimo.raPessoa = :chave) " +
+                                "or lower(livro.titulo) = lower(:chave)", Emprestimo.class)
                         .setParameter("chave", chave)
                         .getResultList();
             });
@@ -88,37 +96,6 @@ public class EmprestimoDAO {
             return true;
         } catch (Exception e) {
             System.out.println("Erro ao excluir empréstimo: " + e.getMessage());
-        }
-        return false;
-    }
-
-    public Livro getLivroByIsbnForEmp(String isbn) {
-        Livro livro = null;
-        try {
-            livro = DBManager.getDatabaseSessionFactory().fromTransaction(session -> {
-                return session.createSelectionQuery("from Livro where isbn = :chave",Livro.class)
-                        .setParameter("chave", isbn)
-                        .getSingleResult();
-            });
-            setQtdeLivroEmp(isbn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return livro;
-    }
-
-    public boolean setQtdeLivroEmp(String isbn){
-        try{
-            DBManager.getDatabaseSessionFactory().inTransaction(session -> {
-                Livro livro = session.get(Livro.class, isbn);
-                livro.setQtde(livro.getQtde()-1);
-                session.persist(livro);
-            });
-            notifyDataChanged();
-            return true;
-        }
-        catch(Exception e){
-            e.printStackTrace();
         }
         return false;
     }
